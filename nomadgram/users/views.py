@@ -1,18 +1,32 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
-from django.views.generic import DetailView, ListView, RedirectView, UpdateView
-
-User = get_user_model()
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from . import models, serializers
 
 
+class ExploreUsers(APIView):
+
+    def get(self, request, format=None):
+
+        last_five = models.User.objects.all().order_by('-date_joined')[:5]
+
+        serializer = serializers.ExploreUserSerializer(last_five, many=True)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+explore_users_view = ExploreUsers.as_view()
+
+# from django.contrib.auth import get_user_model
+# from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.urls import reverse
+# from django.views.generic import DetailView, ListView, RedirectView, UpdateView
+# User = get_user_model()
+"""
 class UserDetailView(LoginRequiredMixin, DetailView):
-
     model = User
     slug_field = "username"
     slug_url_kwarg = "username"
-
-
 user_detail_view = UserDetailView.as_view()
 
 
@@ -50,3 +64,4 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
 
 user_redirect_view = UserRedirectView.as_view()
+"""
